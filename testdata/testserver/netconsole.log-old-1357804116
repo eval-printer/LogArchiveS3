@@ -1,0 +1,6 @@
+Dec 29 18:01:41 testserver usb 1-1: USB disconnect, device number 15
+Dec 29 18:01:41 testserver usb 1-1: new high-speed USB device number 16 using ehci_hcd
+Dec 29 18:01:41 testserver scsi20 : usb-storage 1-1:1.0
+Dec 29 18:01:41 testserver scsi 20:0:0:0: Direct-Access     Linux    File-CD Gadget   0000 PQ: 0 ANSI: 2
+Dec 29 18:01:41 testserver sd 20:0:0:0: Attached scsi generic sg6 type 0
+Dec 29 18:01:41 testserver sd 20:0:0:0: [sdf] Attached SCSI removable disk

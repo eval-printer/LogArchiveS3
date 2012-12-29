@@ -1,0 +1,23 @@
+INTRODUCTION
+============
+System for archiving log files onto Amazon S3.
+
+INSTALLATION
+============
+
+PACKAGE INSTALL ( Recommended )
+================================
+
+The recommended way to install LogArchiveS3 is using your package manager, please see http://las3.niftiestsoftware.com/ for installation 
+instructions.
+
+SOURCE INSTALL
+==============
+
+Clone the git repo:
+
+git clone git://github.com/simoncadman/LogArchiveS3.git
+
+cd LogArchiveS3/
+./configure
+make install

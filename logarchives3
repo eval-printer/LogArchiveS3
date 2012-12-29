@@ -1,0 +1,75 @@
+#! /usr/bin/env python2
+
+import sys, os, string, re
+
+accessKey = None
+secretKey = None
+bucket = None
+
+logpath = sys.argv[1]
+accessKey = sys.argv[2]
+secretKey = sys.argv[3]
+bucket = sys.argv[4]
+
+filenameregexp = re.compile('(.*)-old-(\d*)')
+timestampregex = re.compile('(.*)-old-(\d*)')
+
+if accessKey == None or secretKey == None or bucket == None:
+    print("Missing access key, secret key or bucket")
+    sys.exit(1)
+else:
+    from boto.s3.connection import S3Connection
+    from boto.s3.key import Key
+    conn = S3Connection(accessKey, secretKey)
+    archivingFiles = []
+    for root, dirs, files in os.walk(logpath):
+        if len(files) > 0:
+            for fileItem in files:
+                if filenameregexp.match( fileItem ):
+                    archivingFiles.append( os.path.join(root.replace(logpath,''), fileItem) )
+
+    # add files to archive to tar file
+    earliestItem = 0
+    latestItem = 0
+    
+    import tarfile
+    tempFileName = '/tmp/.tmpfile.tar.bz2'
+    tempArchive = tarfile.open(tempFileName, 'w:bz2')
+    for archiveFile in archivingFiles:
+        fullpath = os.path.join( logpath, archiveFile)
+        tempArchive.add(fullpath)
+        matches = timestampregex.search(archiveFile)
+        if matches != None:
+            timeItem = matches.group(2)
+            if ( timeItem < earliestItem ) :
+                earliestItem = timeItem
+    
+            if ( timeItem > latestItem ) :
+                latestItem = timeItem
+                
+        # fix timestamps
+        if earliestItem == 0 or earliestItem > latestItem:
+            earliestItem = latestItem
+            
+        if latestItem == 0 or latestItem < earliestItem:
+            latestItem = earliestItem
+    
+    tempArchive.close()
+    
+    filename = 'logarchive-' + earliestItem + '-' + latestItem + '.tar.bz2'
+    print("Uploading " + tempFileName + " to " + filename)
+    
+    # upload archive
+    bucketItem = conn.get_bucket(bucket)
+    k = Key(bucketItem)
+    k.key = filename
+    k.set_contents_from_filename(tempFileName)
+    
+    # delete old archive
+    os.unlink(tempFileName);
+    
+    # delete old files
+    for archiveFile in archivingFiles:
+        fullpath = os.path.join( logpath, archiveFile)
+        print "Deleting " + fullpath
+    
