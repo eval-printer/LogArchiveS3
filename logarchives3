@@ -72,4 +72,4 @@ else:
     for archiveFile in archivingFiles:
         fullpath = os.path.join( logpath, archiveFile)
         print "Deleting " + fullpath
-    
+        os.unlink(fullpath);
