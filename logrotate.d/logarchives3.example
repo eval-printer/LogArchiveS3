@@ -1,0 +1,13 @@
+/var/log/remote-log/*/*.log {
+        daily
+        rotate 7
+        notifempty
+        missingok
+        sharedscripts
+        dateext
+        dateformat -old-%s
+        postrotate
+                /bin/kill -HUP $(cat /run/syslog-ng.pid 2>/dev/null) 2>/dev/null || true
+                /usr/local/logarchives3/logarchives3 /var/log/remote-log/ ACCOUNTID SECRETKEY BUCKET 
+        endscript
+}
